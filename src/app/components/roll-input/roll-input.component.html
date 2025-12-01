@@ -1,0 +1,58 @@
+@if (!isGameComplete) {
+<div class="throw-input-section">
+  <form [formGroup]="rollForm" (ngSubmit)="submitRoll()" class="throw-form">
+    <div class="form-group">
+      <label for="pins" class="input-label">Pins knocked down this throw</label>
+      <input
+        id="pins"
+        type="number"
+        formControlName="pins"
+        min="0"
+        max="10"
+        class="pins-input"
+        [class.error]="pinsControl?.invalid && pinsControl?.touched"
+        placeholder="0-10"
+        aria-label="Pins knocked down"
+        aria-required="true"
+        aria-invalid="pinsControl?.invalid && pinsControl?.touched"
+        (input)="onInput()"
+      />
+
+      @if (pinsControl?.invalid && pinsControl?.touched) {
+      <div class="error-message" role="alert">
+        @if (pinsControl?.hasError('required')) { Please enter the number of
+        pins knocked down. } @else if (pinsControl?.hasError('min') ||
+        pinsControl?.hasError('max')) { Pins must be between 0 and 10. }
+      </div>
+      } @if (errorMessage) {
+      <div class="error-message" role="alert">
+        {{ errorMessage }}
+      </div>
+      }
+    </div>
+
+    <button
+      type="submit"
+      class="submit-button"
+      [disabled]="rollForm.invalid || isLoading"
+      aria-label="Submit throw"
+    >
+      @if (isLoading) { Submitting... } @else { Submit Throw }
+    </button>
+  </form>
+</div>
+} @else {
+<div class="game-complete">
+  <p class="complete-message">
+    Game Complete! Final Score: <strong>{{ totalScore }}</strong>
+  </p>
+  <button
+    type="button"
+    class="view-highscores-button"
+    (click)="navigateToHighscores.emit()"
+    aria-label="View high scores"
+  >
+    View High Scores
+  </button>
+</div>
+}

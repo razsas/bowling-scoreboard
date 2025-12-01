@@ -1,0 +1,26 @@
+<div class="scoreboard-container">
+  <div class="header">
+    <h1>Bowling Scoreboard</h1>
+    <div class="player-info">
+      <p>
+        Player: <strong>{{ playerName() }}</strong>
+      </p>
+    </div>
+  </div>
+
+  <app-scoreboard-display-component
+    [frames]="frames()"
+    [getRollDisplay]="getRollDisplay"
+    [currentFrameRolls]="currentFrameRolls()"
+  ></app-scoreboard-display-component>
+
+  <roll-input-component
+    [isGameComplete]="isGameComplete()"
+    [isLoading]="isLoading()"
+    [errorMessage]="errorMessage()"
+    (handleClearError)="handleClearError()"
+    [totalScore]="totalScore()"
+    (handleRoll)="handleRoll($event)"
+    (navigateToHighscores)="navigateToHighscores()"
+  ></roll-input-component>
+</div>

@@ -1,0 +1,28 @@
+<div class="scoreboard-wrapper">
+  <div class="scoreboard" role="table" aria-label="Bowling scoreboard">
+    @for (index of frameIndices; track index) { @let frame = frames[index];
+    <div class="frame-container">
+      <div class="frame-header">
+        <span class="frame-number">{{ index + 1 }}</span>
+      </div>
+
+      <div class="frame-body" [class.frame-10-body]="index === 9">
+        <div class="throws-box">
+          <div class="throw">
+            {{ getLiveRollDisplay(frame, 1, index) }}
+          </div>
+          <div class="throw">
+            {{ getLiveRollDisplay(frame, 2, index) }}
+          </div>
+          @if (index === 9) {
+          <div class="throw">
+            {{ getLiveRollDisplay(frame, 3, index) }}
+          </div>
+          }
+        </div>
+        <div class="score-box">{{ frame && frame.score ? calculateCumulativesScore(index) : "" }}</div>
+      </div>
+    </div>
+    }
+  </div>
+</div>

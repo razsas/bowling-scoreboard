@@ -1,0 +1,47 @@
+<div class="start-screen">
+  <div class="container">
+    <h1 class="title">Bowling Score App</h1>
+    <p class="subtitle">Enter your name to start a new game</p>
+
+    <form
+      [formGroup]="playerForm"
+      (ngSubmit)="onSubmit()"
+      class="player-form"
+      novalidate
+    >
+      <div class="form-group">
+        <input
+          id="playerName"
+          type="text"
+          formControlName="playerName"
+          placeholder="Enter your name"
+          class="player-input"
+          [class.error]="
+            playerNameControl?.invalid && playerNameControl?.touched
+          "
+          aria-label="Player name"
+          aria-required="true"
+          aria-invalid="playerNameControl?.invalid && playerNameControl?.touched"
+        />
+        @if ((playerNameControl?.invalid && playerNameControl?.touched) ||
+        errorMessage()) {
+        <div class="error-message" role="alert">
+          @if (playerNameControl?.hasError('required')) { Player name is
+          required. } @else {
+          {{ errorMessage() }}
+          }
+        </div>
+        }
+      </div>
+
+      <button
+        type="submit"
+        class="start-button"
+        [disabled]="playerForm.invalid || isLoading()"
+        aria-label="Start game"
+      >
+        @if (isLoading()) { Starting... } @else { Start Game }
+      </button>
+    </form>
+  </div>
+</div>
