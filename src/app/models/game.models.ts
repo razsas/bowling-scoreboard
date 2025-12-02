@@ -1,3 +1,5 @@
+export type RollNumber = 'roll1' | 'roll2' | 'roll3';
+
 export interface Frame {
   id: number;
   gameId: number;

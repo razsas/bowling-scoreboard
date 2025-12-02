@@ -1,8 +1,9 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { EMPTY, Observable, catchError, map, of, tap, throwError } from 'rxjs';
+import { Observable, catchError, map, of, throwError } from 'rxjs';
 import { Game, RollInput, RollResult } from '../models/game.models';
 import { environment } from '../../environments/environments';
+import { GAME_CONSTANTS, ERROR_MESSAGES } from '../constants/game.constants';
 
 @Injectable({
   providedIn: 'root',
@@ -38,7 +39,7 @@ export class GameService {
         return game;
       }),
       catchError((error) =>
-        throwError(() => `Error starting new game :${error}`)
+        throwError(() => new Error(`Error starting new game: ${error}`))
       )
     );
   }
@@ -46,7 +47,7 @@ export class GameService {
   processRoll(pins: number): Observable<RollResult> {
     const currentGame = this.currentGame();
     let error;
-    const isLastFrame = (this.currentGame()?.frames.length || 0) === 9;
+    const isLastFrame = (this.currentGame()?.frames.length || 0) === GAME_CONSTANTS.LAST_FRAME_INDEX;
 
     error = this.rollValidations(currentGame, pins);
     if (error) {
@@ -82,14 +83,16 @@ export class GameService {
   ): Observable<RollResult> | null {
     if (!currentGame) {
       return throwError(
-        () => new Error('No active game. Please start a new game first.')
+        () => new Error(ERROR_MESSAGES.NO_ACTIVE_GAME)
       );
     }
     if (currentGame.isGameOver) {
-      return throwError(() => new Error('Game is already complete.'));
+      return throwError(() => new Error(ERROR_MESSAGES.GAME_COMPLETE));
     }
-    if (pins < 0 || pins > 10) {
-      return throwError(() => new Error(`Pins must be between 0 and ${10}.`));
+    if (pins < GAME_CONSTANTS.MIN_PINS || pins > GAME_CONSTANTS.MAX_PINS) {
+      return throwError(() => new Error(
+        ERROR_MESSAGES.INVALID_PIN_COUNT(GAME_CONSTANTS.MIN_PINS, GAME_CONSTANTS.MAX_PINS)
+      ));
     }
     return null;
   }
@@ -100,11 +103,11 @@ export class GameService {
   ): Observable<RollResult> | null {
     const [roll1, roll2] = currentRolls;
 
-    if (!isLastFrame && roll1 !== 10 && currentRolls.length === 2) {
+    if (!isLastFrame && roll1 !== GAME_CONSTANTS.MAX_PINS && currentRolls.length === GAME_CONSTANTS.ROLLS_PER_REGULAR_FRAME) {
       const sum = (roll1 || 0) + (roll2 || 0);
-      if (sum > 10) {
+      if (sum > GAME_CONSTANTS.MAX_PINS) {
         return throwError(
-          () => new Error(`Invalid frame: ${roll1} + ${roll2} = ${sum} > ${10}`)
+          () => new Error(ERROR_MESSAGES.INVALID_FRAME_SUM(roll1, roll2, sum, GAME_CONSTANTS.MAX_PINS))
         );
       }
     }
@@ -115,17 +118,17 @@ export class GameService {
     if (rolls.length === 0) {
       return false;
     }
-    const isStrike = rolls[0] === 10;
+    const isStrike = rolls[0] === GAME_CONSTANTS.MAX_PINS;
 
     if (!isLastFrame) {
-      return isStrike || rolls.length >= 2;
+      return isStrike || rolls.length >= GAME_CONSTANTS.ROLLS_PER_REGULAR_FRAME;
     } else {
-      if (rolls.length < 2) {
+      if (rolls.length < GAME_CONSTANTS.ROLLS_PER_REGULAR_FRAME) {
         return false;
       }
-      const isSpare = rolls[0] + rolls[1] === 10;
+      const isSpare = rolls[0] + rolls[1] === GAME_CONSTANTS.MAX_PINS;
 
-      return isStrike || isSpare ? rolls.length >= 3 : rolls.length >= 2;
+      return isStrike || isSpare ? rolls.length >= GAME_CONSTANTS.MAX_ROLLS_LAST_FRAME : rolls.length >= GAME_CONSTANTS.ROLLS_PER_REGULAR_FRAME;
     }
   }
 
@@ -168,7 +171,7 @@ export class GameService {
             errorMessage:
               error.error?.message ||
               error.message ||
-              'Failed to communicate with bowling service.',
+              ERROR_MESSAGES.FAILED_BOWLING_SERVICE,
           });
         })
       );

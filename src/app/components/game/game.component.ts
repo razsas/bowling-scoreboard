@@ -10,6 +10,7 @@ import { GameService } from '../../services/game.service';
 import { Router } from '@angular/router';
 import { ScoreboardDisplayComponent } from '../scoreboard-display/scoreboard-display.component';
 import { RollInputComponent } from '../roll-input/roll-input.component';
+import { ERROR_MESSAGES } from '../../constants/game.constants';
 
 @Component({
   selector: 'app-game',
@@ -22,8 +23,8 @@ export class GameComponent {
   private readonly gameService = inject(GameService);
   private readonly router = inject(Router);
 
-  errorMessage = signal<string>('');
-  isLoading = signal<boolean>(false);
+  readonly errorMessage = signal<string>('');
+  readonly isLoading = signal<boolean>(false);
 
   readonly playerName = this.gameService.playerName;
   readonly frames = this.gameService.frames;
@@ -46,10 +47,9 @@ export class GameComponent {
       },
       error: (error) => {
         this.errorMessage.set(
-          error.message || 'Failed to add throw. Please try again.'
+          error.message || ERROR_MESSAGES.FAILED_TO_ROLL
         );
         this.isLoading.set(false);
-        console.error('Error adding throw:', error);
       },
     });
   }

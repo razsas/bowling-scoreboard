@@ -1,8 +1,9 @@
-import { Injectable, signal, computed, effect, inject } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { HighscoreEntry } from '../models/game.models';
-import { catchError, of, throwError, switchMap, Observable, tap } from 'rxjs';
+import { catchError, of, Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environments';
+import { ERROR_MESSAGES } from '../constants/game.constants';
 
 @Injectable()
 export class HighscoreService {
@@ -24,7 +25,7 @@ export class HighscoreService {
     return this.getScores().pipe(
       tap((scores) => this._highscores.set(scores)),
       catchError((error) => {
-        this._currentError.set('Failed to load highscores');
+        this._currentError.set(ERROR_MESSAGES.FAILED_LOAD_HIGHSCORES);
         return of([]);
       })
     );

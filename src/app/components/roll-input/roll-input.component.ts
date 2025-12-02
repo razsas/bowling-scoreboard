@@ -16,7 +16,7 @@ import {
 } from '@angular/forms';
 
 @Component({
-  selector: 'roll-input-component',
+  selector: 'app-roll-input',
   imports: [CommonModule, ReactiveFormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './roll-input.component.html',

@@ -28,8 +28,8 @@ export class StartScreenComponent {
   private readonly router = inject(Router);
 
   playerForm: FormGroup;
-  errorMessage = signal<string>('');
-  isLoading = signal<boolean>(false);
+  readonly errorMessage = signal<string>('');
+  readonly isLoading = signal<boolean>(false);
 
   constructor() {
     this.playerForm = this.fb.group({

@@ -13,7 +13,7 @@
     [currentFrameRolls]="currentFrameRolls()"
   ></app-scoreboard-display-component>
 
-  <roll-input-component
+  <app-roll-input
     [isGameComplete]="isGameComplete()"
     [isLoading]="isLoading()"
     [errorMessage]="errorMessage()"
@@ -21,5 +21,5 @@
     [totalScore]="totalScore()"
     (handleRoll)="handleRoll($event)"
     (navigateToHighscores)="navigateToHighscores()"
-  ></roll-input-component>
+  ></app-roll-input>
 </div>
