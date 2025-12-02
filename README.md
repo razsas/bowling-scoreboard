@@ -8,7 +8,6 @@ A modern bowling scoring application built with Angular 19, featuring real-time 
 - ✅ Automatic strike and spare detection
 - ✅ 10th frame bonus roll handling
 - ✅ High score leaderboard
-- ✅ Responsive design
 - ✅ Form validation
 - ✅ OnPush change detection strategy for optimal performance
 - ✅ Signal-based state management
