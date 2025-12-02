@@ -11,11 +11,6 @@ import { Frame } from '../../models/game.models';
 })
 export class ScoreboardDisplayComponent {
   @Input({ required: true }) frames!: Frame[];
-  @Input({ required: true }) getRollDisplay!: (
-    frame: Frame,
-    throwNumber: "roll1" | "roll2" | "roll3",
-    index: number
-  ) => string;
   @Input({ required: true }) currentFrameRolls!: number[];
 
   public readonly frameIndices: number[] = Array.from(
@@ -23,7 +18,7 @@ export class ScoreboardDisplayComponent {
     (_, i) => i
   );
 
-  public getLiveRollDisplay(
+  getLiveRollDisplay(
     frame: Frame | undefined,
     throwNumber: 1 | 2 | 3,
     frameIndex: number
@@ -35,12 +30,13 @@ export class ScoreboardDisplayComponent {
       const rollIndex = throwNumber - 1;
       if (this.currentFrameRolls.length > rollIndex) {
         const rollValue = this.currentFrameRolls[rollIndex];
-        if (
+        const isTenthFrame = frameIndex === 9;
+        const isSpare =
           this.currentFrameRolls.length === 2 &&
-          this.currentFrameRolls[0] + this.currentFrameRolls[1] === 10 &&
-          frameIndex === 9 &&
-          throwNumber === 2
-        ) {
+          this.currentFrameRolls[0] + this.currentFrameRolls[1] === 10;
+        const isSecondThrow = throwNumber === 2;
+        
+        if (isSpare && isTenthFrame && isSecondThrow) {
           return '/';
         }
         if (rollValue === 10) {
@@ -51,6 +47,20 @@ export class ScoreboardDisplayComponent {
     }
     return '';
   }
+
+  getRollDisplay = (
+    frame: Frame,
+    throwNumber: 'roll1' | 'roll2' | 'roll3',
+    index: number
+  ): string => {
+    let val = frame[throwNumber];
+    if (val === null || val === undefined) return '';
+    if (frame.isStrike && throwNumber === 'roll1') return 'X';
+    if (val === 10 && throwNumber === 'roll3') return 'X';
+    if (val === 10 && index === 9 && throwNumber === 'roll2') return 'X';
+    if (frame.isSpare && throwNumber === 'roll2') return '/';
+    return val.toString();
+  };
 
   calculateCumulativesScore(currentIndex: number): number {
     return this.frames

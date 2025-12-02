@@ -8,19 +8,12 @@ import {
 } from '@angular/core';
 import { GameService } from '../../services/game.service';
 import { Router } from '@angular/router';
-import { ReactiveFormsModule } from '@angular/forms';
 import { ScoreboardDisplayComponent } from '../scoreboard-display/scoreboard-display.component';
 import { RollInputComponent } from '../roll-input/roll-input.component';
-import { Frame } from '../../models/game.models';
 
 @Component({
   selector: 'app-game',
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    ScoreboardDisplayComponent,
-    RollInputComponent,
-  ],
+  imports: [CommonModule, ScoreboardDisplayComponent, RollInputComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss',
@@ -35,7 +28,7 @@ export class GameComponent {
   readonly playerName = this.gameService.playerName;
   readonly frames = this.gameService.frames;
   readonly currentFrameRolls = this.gameService.currentFrameRolls;
-  
+
   readonly isGameComplete = computed(() => {
     return this.gameService.currentGame()?.isGameOver || false;
   });
@@ -64,20 +57,6 @@ export class GameComponent {
   navigateToHighscores(): void {
     this.router.navigate(['/highscores']);
   }
-
-  getRollDisplay = (
-    frame: Frame,
-    throwNumber: 'roll1' | 'roll2' | 'roll3',
-    index: number
-  ): string => {
-    let val = frame[throwNumber];
-    if (val === null || val === undefined) return '';
-    if (frame.isStrike && throwNumber === 'roll1') return 'X';
-    if (val === 10 && throwNumber === 'roll3') return 'X';
-    if (val === 10 && index === 9 && throwNumber === 'roll2') return 'X';
-    if (frame.isSpare && throwNumber === 'roll2') return '/';
-    return val.toString();
-  };
 
   handleClearError(): void {
     this.errorMessage.set('');
