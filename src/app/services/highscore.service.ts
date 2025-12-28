@@ -19,12 +19,12 @@ export class HighscoreService {
     this.loadHighscores().subscribe();
   }
 
-  public loadHighscores(): Observable<HighscoreEntry[]> {
+  private loadHighscores(): Observable<HighscoreEntry[]> {
     this._currentError.set(null);
 
     return this.getScores().pipe(
       tap((scores) => this._highscores.set(scores)),
-      catchError((error) => {
+      catchError(() => {
         this._currentError.set(ERROR_MESSAGES.FAILED_LOAD_HIGHSCORES);
         return of([]);
       })

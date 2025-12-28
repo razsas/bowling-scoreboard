@@ -1,28 +1,17 @@
 <div class="scoreboard-wrapper">
-  <div class="scoreboard" role="table" aria-label="Bowling scoreboard">
-    @for (index of frameIndices; track index) { @let frame = frames[index];
-    <div class="frame-container">
-      <div class="frame-header">
-        <span class="frame-number">{{ index + 1 }}</span>
+      <div class="scoreboard" role="list" aria-label="Scoreboard">
+        @for (idx of frameIndices; track idx) {
+          @let frame = allFrames()[idx];
+          <app-frame
+            role="listitem"
+            [attr.aria-label]="'Frame ' + (idx + 1)"
+            [frameNumber]="idx + 1"
+            [roll1]="frame?.roll1 | rollDisplay:frame:'roll1'"
+            [roll2]="frame?.roll2 | rollDisplay:frame:'roll2'"
+            [roll3]="frame?.roll3 | rollDisplay:frame:'roll3'"
+            [score]="cumulativeScores()[idx]"
+            [isTenthFrame]="idx === 9"
+          />
+        }
       </div>
-
-      <div class="frame-body" [class.frame-10-body]="index === 9">
-        <div class="throws-box">
-          <div class="throw">
-            {{ getLiveRollDisplay(frame, 1, index) }}
-          </div>
-          <div class="throw">
-            {{ getLiveRollDisplay(frame, 2, index) }}
-          </div>
-          @if (index === 9) {
-          <div class="throw">
-            {{ getLiveRollDisplay(frame, 3, index) }}
-          </div>
-          }
-        </div>
-        <div class="score-box">{{ frame && frame.score ? calculateCumulativesScore(index) : "" }}</div>
-      </div>
-    </div>
-    }
   </div>
-</div>

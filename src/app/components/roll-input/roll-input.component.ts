@@ -2,10 +2,9 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   inject,
-  Input,
-  Output,
+  input,
+  output,
 } from '@angular/core';
 import {
   AbstractControl,
@@ -25,14 +24,14 @@ import {
 export class RollInputComponent {
   private readonly fb = inject(FormBuilder);
 
-  @Input({ required: true }) isGameComplete!: boolean;
-  @Input({ required: true }) isLoading!: boolean;
-  @Input({ required: true }) errorMessage!: string | null;
-  @Input({ required: true }) totalScore!: number | undefined;
+  isGameComplete = input.required<boolean>();
+  isLoading = input.required<boolean>();
+  errorMessage = input.required<string | null>();
+  totalScore = input<number | undefined>();
 
-  @Output() handleRoll = new EventEmitter<number>();
-  @Output() navigateToHighscores = new EventEmitter<void>();
-  @Output() handleClearError = new EventEmitter<void>();
+  handleRoll = output<number>();
+  navigateToHighscores = output<void>();
+  handleClearError = output<void>();
 
   rollForm!: FormGroup;
 
@@ -59,7 +58,7 @@ export class RollInputComponent {
   }
 
   onInput(): void {
-    if (this.errorMessage) {
+    if (this.errorMessage()) {
       this.handleClearError.emit();
     }
   }

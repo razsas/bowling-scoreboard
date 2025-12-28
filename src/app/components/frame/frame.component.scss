@@ -1,0 +1,55 @@
+.frame-header {
+  background: #333;
+  color: white;
+  padding: 0.5rem;
+  text-align: center;
+  font-weight: bold;
+
+  .frame-number {
+    font-size: 1rem;
+  }
+}
+
+.frame-body {
+  background: #f0f0f0;
+  border: 2px solid #333;
+  border-top: none;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.3rem;
+  min-height: 80px;
+  min-width: 80px;
+  display: flex;
+  flex-direction: column;
+}
+
+.frame-10-body {
+  min-width: 120px;
+}
+
+.throws-box {
+  display: flex;
+}
+
+.throw {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  font-weight: bold;
+  font-size: 1.2rem;
+  border-right: 1px solid #ddd;
+  width: 50%;
+  min-height: 40px;
+  border-bottom: 1px solid #ddd;
+
+  &:last-child {
+    border-right: none;
+  }
+}
+
+.score-box {
+  min-height: 15px;
+  min-width: 15px;
+  padding: 6px;
+}

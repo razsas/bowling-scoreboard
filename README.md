@@ -184,7 +184,6 @@ The build artifacts will be stored in the `dist/` directory.
 ## 🎨 Styling
 
 - Component-scoped SCSS stylesheets
-- Responsive design
 - Modern UI/UX practices
 
 ## 📦 Dependencies

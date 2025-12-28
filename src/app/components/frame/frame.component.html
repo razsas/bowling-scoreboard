@@ -1,0 +1,13 @@
+<div class="frame-container">
+  <div class="frame-header">{{ frameNumber() }}</div>
+  <div class="frame-body" [class.frame-10-body]="isTenthFrame()">
+    <div class="throws-box">
+      <div class="throw">{{ roll1() }}</div>
+      <div class="throw">{{ roll2() }}</div>
+      @if (isTenthFrame()) {
+        <div class="throw">{{ roll3() }}</div>
+      }
+    </div>
+    <div class="score-box">{{ score() }}</div>
+  </div>
+</div>

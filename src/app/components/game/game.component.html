@@ -8,18 +8,18 @@
     </div>
   </div>
 
-  <app-scoreboard-display-component
+  <app-scoreboard-display
     [frames]="frames()"
     [currentFrameRolls]="currentFrameRolls()"
-  ></app-scoreboard-display-component>
+  />
 
   <app-roll-input
     [isGameComplete]="isGameComplete()"
     [isLoading]="isLoading()"
     [errorMessage]="errorMessage()"
-    (handleClearError)="handleClearError()"
     [totalScore]="totalScore()"
+    (handleClearError)="handleClearError()"
     (handleRoll)="handleRoll($event)"
     (navigateToHighscores)="navigateToHighscores()"
-  ></app-roll-input>
+  />
 </div>

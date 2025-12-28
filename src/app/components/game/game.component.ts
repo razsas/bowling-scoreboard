@@ -1,23 +1,16 @@
-import { CommonModule } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
-import { GameService } from '../../services/game.service';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
+import { GameService } from '../../services/game.service';
 import { ScoreboardDisplayComponent } from '../scoreboard-display/scoreboard-display.component';
 import { RollInputComponent } from '../roll-input/roll-input.component';
 import { ERROR_MESSAGES } from '../../constants/game.constants';
 
 @Component({
   selector: 'app-game',
-  imports: [CommonModule, ScoreboardDisplayComponent, RollInputComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [ScoreboardDisplayComponent, RollInputComponent],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GameComponent {
   private readonly gameService = inject(GameService);
@@ -42,23 +35,14 @@ export class GameComponent {
     this.errorMessage.set('');
 
     this.gameService.processRoll(pins).subscribe({
-      next: (_) => {
-        this.isLoading.set(false);
-      },
-      error: (error) => {
-        this.errorMessage.set(
-          error.message || ERROR_MESSAGES.FAILED_TO_ROLL
-        );
+      next: () => this.isLoading.set(false),
+      error: (err) => {
+        this.errorMessage.set(err.message || ERROR_MESSAGES.FAILED_TO_ROLL);
         this.isLoading.set(false);
       },
     });
   }
 
-  navigateToHighscores(): void {
-    this.router.navigate(['/highscores']);
-  }
-
-  handleClearError(): void {
-    this.errorMessage.set('');
-  }
+  navigateToHighscores = () => this.router.navigate(['/highscores']);
+  handleClearError = () => this.errorMessage.set('');
 }

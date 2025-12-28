@@ -1,66 +1,59 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { Frame, RollNumber } from '../../models/game.models';
-import { GAME_CONSTANTS } from '../../constants/game.constants';
-import { RollDisplayUtil } from '../../utils/roll-display.util';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { Frame } from '../../models/game.models';
+import { FrameComponent } from '../frame/frame.component';
+import { RollDisplayPipe } from '../../pipes/roll-display.pipe';
 
 @Component({
-  selector: 'app-scoreboard-display-component',
-  imports: [CommonModule],
+  selector: 'app-scoreboard-display',
+  imports: [FrameComponent, RollDisplayPipe],
   templateUrl: './scoreboard-display.component.html',
   styleUrl: './scoreboard-display.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ScoreboardDisplayComponent {
-  @Input({ required: true }) frames!: Frame[];
-  @Input({ required: true }) currentFrameRolls!: number[];
+  frames = input.required<Frame[]>();
+  currentFrameRolls = input.required<number[]>();
 
-  public readonly frameIndices: number[] = Array.from(
-    { length: GAME_CONSTANTS.MAX_FRAMES },
-    (_, i) => i
-  );
+  readonly frameIndices = Array.from({ length: 10 }, (_, i) => i);
 
-  getLiveRollDisplay(
-    frame: Frame | undefined,
-    throwNumber: 1 | 2 | 3,
-    frameIndex: number
-  ): string {
-    if (frame) {
-      return this.getRollDisplay(frame, `roll${throwNumber}` as RollNumber, frameIndex);
+  readonly allFrames = computed(() => {
+    const finished = this.frames();
+    const current = this.currentFrameRolls();
+    const nextIdx = finished.length;
+    
+    const frames: (Frame | undefined)[] = [...finished];
+    if (nextIdx < 10) {
+      frames[nextIdx] = this.createActiveFrame(current, nextIdx);
     }
-    if (frameIndex === this.frames.length) {
-      const rollIndex = throwNumber - 1;
-      if (this.currentFrameRolls.length > rollIndex) {
-        const rollValue = this.currentFrameRolls[rollIndex];
-        const isTenthFrame = frameIndex === GAME_CONSTANTS.LAST_FRAME_INDEX;
-        const isSpare =
-          this.currentFrameRolls.length === GAME_CONSTANTS.ROLLS_PER_REGULAR_FRAME &&
-          this.currentFrameRolls[0] + this.currentFrameRolls[1] === GAME_CONSTANTS.MAX_PINS;
-        const isSecondThrow = throwNumber === GAME_CONSTANTS.ROLLS_PER_REGULAR_FRAME;
-        
-        if (isSpare && isTenthFrame && isSecondThrow) {
-          return '/';
-        }
-        if (rollValue === GAME_CONSTANTS.MAX_PINS) {
-          return 'X';
-        }
-        return rollValue.toString();
-      }
-    }
-    return '';
-  }
+    return frames;
+  });
 
-  getRollDisplay = (
-    frame: Frame,
-    rollNumber: RollNumber,
-    frameIndex: number
-  ): string => {
-    return RollDisplayUtil.getRollDisplay(frame, rollNumber, frameIndex);
-  };
+  readonly cumulativeScores = computed(() => {
+    let total = 0;
+    const scores = this.frames().map(f => {
+      total += f.score;
+      return total;
+    });
+    return scores;
+  });
 
-  calculateCumulativesScore(currentIndex: number): number {
-    return this.frames
-      .slice(0, currentIndex + 1)
-      .reduce((total, frame) => total + frame.score, 0);
+  private createActiveFrame(rolls: number[], index: number): Frame {
+    const r1 = rolls[0] ?? null;
+    const r2 = rolls[1] ?? null;
+    const r3 = rolls[2] ?? null;
+    const isStrike = r1 === 10;
+    const isSpare = !isStrike && r1 !== null && r2 !== null && (r1 + r2 === 10);
+
+    return {
+      id: -1,
+      gameId: -1,
+      frameIndex: index,
+      roll1: r1,
+      roll2: r2,
+      roll3: r3,
+      score: 0,
+      isStrike,
+      isSpare
+    };
   }
 }
