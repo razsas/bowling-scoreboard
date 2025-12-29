@@ -17,7 +17,7 @@
         <div class="rank">{{ i + 1 }}</div>
         <div class="player-info">
           <div class="player-name">{{ entry.name }}</div>
-          <div class="score-date">{{ formatDate(entry.dateAchieved) }}</div>
+          <div class="score-date">{{ entry.dateAchieved | dateFormatter }}</div>
         </div>
         <div class="score">{{ entry.score }}</div>
       </div>

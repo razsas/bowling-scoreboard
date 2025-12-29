@@ -2,10 +2,11 @@ import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HighscoreService } from '../../services/highscore.service';
+import { DateFormatterPipe } from '../../pipes/date-formatter.pipe';
 
 @Component({
   selector: 'app-highscores',
-  imports: [CommonModule],
+  imports: [CommonModule, DateFormatterPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './highscores.component.html',
   styleUrl: './highscores.component.scss',
@@ -21,22 +22,5 @@ export class HighscoresComponent {
     return this.highscoreService.scores();
   }
 
-  formatDate(dateString: string): string {
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-    } catch {
-      return dateString;
-    }
-  }
-
-  playAgain(): void {
-    this.router.navigate(['/']);
-  }
+  playAgain = () => this.router.navigate(['/']);
 }

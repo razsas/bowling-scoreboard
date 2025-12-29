@@ -1,11 +1,16 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { Frame } from '../../models/game.models';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  input,
+} from '@angular/core';
+import { Frame, RollNumber } from '../../models/game.models';
 import { FrameComponent } from '../frame/frame.component';
-import { RollDisplayPipe } from '../../pipes/roll-display.pipe';
+import { GAME_CONSTANTS } from '../../constants/game.constants';
 
 @Component({
   selector: 'app-scoreboard-display',
-  imports: [FrameComponent, RollDisplayPipe],
+  imports: [FrameComponent],
   templateUrl: './scoreboard-display.component.html',
   styleUrl: './scoreboard-display.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -14,46 +19,88 @@ export class ScoreboardDisplayComponent {
   frames = input.required<Frame[]>();
   currentFrameRolls = input.required<number[]>();
 
-  readonly frameIndices = Array.from({ length: 10 }, (_, i) => i);
-
-  readonly allFrames = computed(() => {
+  readonly viewFrames = computed<FrameVM[]>(() => {
     const finished = this.frames();
-    const current = this.currentFrameRolls();
-    const nextIdx = finished.length;
-    
-    const frames: (Frame | undefined)[] = [...finished];
-    if (nextIdx < 10) {
-      frames[nextIdx] = this.createActiveFrame(current, nextIdx);
-    }
-    return frames;
-  });
+    const liveRolls = this.currentFrameRolls();
+    const lastIdx = GAME_CONSTANTS.LAST_FRAME_INDEX;
 
-  readonly cumulativeScores = computed(() => {
-    let total = 0;
-    const scores = this.frames().map(f => {
-      total += f.score;
-      return total;
+    let cumulative = 0;
+
+    return Array.from({ length: GAME_CONSTANTS.MAX_FRAMES }, (_, idx) => {
+      const isLastFrame = idx === lastIdx;
+      // Get frame data: either from finished list or create a "live" one
+      const frame =
+        finished[idx] ||
+        (idx === finished.length
+          ? this.createActiveFrame(liveRolls, idx)
+          : null);
+
+      // Update cumulative score only if frame is finished and has a score
+      const hasScore = frame && finished[idx]?.score !== undefined;
+      if (hasScore) cumulative += frame.score;
+
+      return {
+        frameNumber: idx + 1,
+        ariaLabel: `Frame ${idx + 1}`,
+        isTenthFrame: isLastFrame,
+        roll1: frame ? this.formatRoll(frame, 'roll1') : '',
+        roll2: frame ? this.formatRoll(frame, 'roll2') : '',
+        roll3: frame ? this.formatRoll(frame, 'roll3') : '',
+        score: hasScore ? cumulative : '',
+      } as FrameVM;
     });
-    return scores;
   });
 
   private createActiveFrame(rolls: number[], index: number): Frame {
-    const r1 = rolls[0] ?? null;
-    const r2 = rolls[1] ?? null;
-    const r3 = rolls[2] ?? null;
-    const isStrike = r1 === 10;
-    const isSpare = !isStrike && r1 !== null && r2 !== null && (r1 + r2 === 10);
-
     return {
       id: -1,
       gameId: -1,
       frameIndex: index,
-      roll1: r1,
-      roll2: r2,
-      roll3: r3,
+      roll1: rolls[0] ?? null,
+      roll2: rolls[1] ?? null,
+      roll3: rolls[2] ?? null,
       score: 0,
-      isStrike,
-      isSpare
+      isStrike: rolls[0] === GAME_CONSTANTS.MAX_PINS,
+      isSpare: (rolls[0] ?? 0) + (rolls[1] ?? 0) === GAME_CONSTANTS.MAX_PINS &&
+        rolls[0] !== GAME_CONSTANTS.MAX_PINS,
     };
   }
+
+  private formatRoll(frame: Frame, rollNum: RollNumber): string {
+    const val = frame[rollNum];
+    if (val === null || val === undefined) return '';
+
+    const { MAX_PINS, LAST_FRAME_INDEX } = GAME_CONSTANTS;
+    const isLast = frame.frameIndex === LAST_FRAME_INDEX;
+
+    // Strike Logic
+    if (val === MAX_PINS) {
+      // In 10th frame, all rolls can be strikes. In others, only roll1.
+      if (isLast || rollNum === 'roll1') return 'X';
+    }
+
+    // Spare Logic
+    if (rollNum === 'roll2') {
+      const prev = frame.roll1 ?? 0;
+      if (prev !== MAX_PINS && prev + val === MAX_PINS) return '/';
+    }
+
+    // 10th frame 3rd roll spare logic (e.g., X, 7, 3)
+    if (isLast && rollNum === 'roll3') {
+      const prev = frame.roll2 ?? 0;
+      if (prev !== MAX_PINS && prev + val === MAX_PINS) return '/';
+    }
+
+    return val.toString();
+  }
+}
+
+interface FrameVM {
+  frameNumber: number;
+  roll1: string;
+  roll2: string;
+  roll3: string;
+  score: number | '';
+  isTenthFrame: boolean;
+  ariaLabel: string;
 }

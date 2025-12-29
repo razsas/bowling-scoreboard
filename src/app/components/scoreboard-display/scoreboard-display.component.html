@@ -1,17 +1,16 @@
 <div class="scoreboard-wrapper">
-      <div class="scoreboard" role="list" aria-label="Scoreboard">
-        @for (idx of frameIndices; track idx) {
-          @let frame = allFrames()[idx];
-          <app-frame
-            role="listitem"
-            [attr.aria-label]="'Frame ' + (idx + 1)"
-            [frameNumber]="idx + 1"
-            [roll1]="frame?.roll1 | rollDisplay:frame:'roll1'"
-            [roll2]="frame?.roll2 | rollDisplay:frame:'roll2'"
-            [roll3]="frame?.roll3 | rollDisplay:frame:'roll3'"
-            [score]="cumulativeScores()[idx]"
-            [isTenthFrame]="idx === 9"
-          />
-        }
-      </div>
+  <div class="scoreboard" role="list" aria-label="Scoreboard">
+    @for (vm of viewFrames(); track vm.frameNumber) {
+    <app-frame
+      role="listitem"
+      [attr.aria-label]="vm.ariaLabel"
+      [frameNumber]="vm.frameNumber"
+      [roll1]="vm.roll1"
+      [roll2]="vm.roll2"
+      [roll3]="vm.roll3"
+      [score]="vm.score"
+      [isTenthFrame]="vm.isTenthFrame"
+    />
+    }
   </div>
+</div>

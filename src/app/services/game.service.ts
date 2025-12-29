@@ -1,7 +1,7 @@
 import { Injectable, signal, computed, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, map, of, throwError } from 'rxjs';
-import { Game, RollInput, RollResult } from '../models/game.models';
+import { Frame, Game, RollInput, RollResult } from '../models/game.models';
 import { environment } from '../../environments/environments';
 import { GAME_CONSTANTS, ERROR_MESSAGES } from '../constants/game.constants';
 import { BowlingGameLogic } from '../utils/bowling-game.logic';
@@ -12,114 +12,135 @@ import { BowlingGameLogic } from '../utils/bowling-game.logic';
 export class GameService {
   private readonly http = inject(HttpClient);
 
-  private _currentGame = signal<Game | null>(null);
-  private _currentFrameRolls = signal<number[]>([]);
+  // --- State ---
+  private readonly _currentGame = signal<Game | null>(null);
+  private readonly _currentFrameRolls = signal<number[]>([]);
 
-  public readonly currentGame = computed(() => this._currentGame());
-  public readonly playerName = computed(() => this.currentGame()?.name || '');
-  public readonly frames = computed(() => this.currentGame()?.frames || []);
-  public readonly currentFrameRolls = computed(() => this._currentFrameRolls());
+  // --- Selectors ---
+  public readonly currentGame = this._currentGame.asReadonly();
+  public readonly currentFrameRolls = this._currentFrameRolls.asReadonly();
+  public readonly playerName = computed(() => this.currentGame()?.name ?? '');
+  public readonly frames = computed(() => this.currentGame()?.frames ?? []);
 
-  private setCurrentGame(game: Game): void {
-    this._currentGame.set(game);
-  }
-
-  private recordRoll(pins: number): void {
-    this._currentFrameRolls.set([...this.currentFrameRolls(), pins]);
-  }
-
-  private resetCurrentRolls(): void {
-    this._currentFrameRolls.set([]);
-  }
-
+  // --- Public API ---
   startNewGame(name: string): Observable<Game> {
-    return this.sendStartGameApiRequest(name).pipe(
+    return this.http.get<Game>(`${environment.apiUrl}/start/${name}`).pipe(
       map((game) => {
-        this.setCurrentGame(game);
-        this.resetCurrentRolls();
+        this.updateGameState(game);
         return game;
       }),
-      catchError((error) =>
-        throwError(() => new Error(`Error starting new game: ${error}`))
+      catchError((err) =>
+        throwError(() => new Error(`Failed to start: ${err.message}`))
+      )
+    );
+  }
+
+  loadGame(gameId: number): Observable<Game> {
+    return this.http.get<Game>(`${environment.apiUrl}/${gameId}`).pipe(
+      map((game) => {
+        this.updateGameState(game);
+        return game;
+      }),
+      catchError((err) =>
+        throwError(() => new Error(`Failed to load game: ${err.message}`))
       )
     );
   }
 
   processRoll(pins: number): Observable<RollResult> {
-    const currentGame = this.currentGame();
-    let error;
-    const isLastFrame = (this.currentGame()?.frames.length || 0) === GAME_CONSTANTS.LAST_FRAME_INDEX;
+    const game = this.currentGame();
+    const isLastFrame =
+      this.frames().length === GAME_CONSTANTS.LAST_FRAME_INDEX;
 
-    error = BowlingGameLogic.validateRoll(currentGame, pins);
-    if (error) {
-      return error;
+    // 1. Validation
+    const validationError = BowlingGameLogic.validateRoll(game, pins);
+    if (validationError) return validationError;
+
+    // 2. State Update (Optimistic)
+    this._currentFrameRolls.update((prev) => [...prev, pins]);
+    const updatedRolls = this.currentFrameRolls();
+
+    // 3. Check Completion
+    if (!BowlingGameLogic.isFrameComplete(isLastFrame, updatedRolls)) {
+      return of({ isSuccess: true, state: game! });
     }
 
-    this.recordRoll(pins);
-
-    const isFrameComplete = BowlingGameLogic.isFrameComplete(
+    // 4. Final Frame Validation & Submission
+    const frameError = BowlingGameLogic.validateFrame(
       isLastFrame,
-      this.currentFrameRolls()
+      updatedRolls
     );
-    if (!isFrameComplete) {
-      return of({ isSuccess: true, state: currentGame! });
+    if (frameError) {
+      this.resetTurn();
+      return frameError;
     }
 
-    error = BowlingGameLogic.validateFrame(isLastFrame, this.currentFrameRolls());
-    if (error) {
-      this.resetCurrentRolls();
-      return error;
-    }
-
-    const rollInput = this.createRollInput(
-      currentGame!.id,
-      this.currentFrameRolls()
-    );
-    return this.postRoll(rollInput);
+    return this.submitTurn(game!.id, updatedRolls);
   }
 
-  private createRollInput(gameId: number, rolls: number[]): RollInput {
+  private submitTurn(gameId: number, rolls: number[]): Observable<RollResult> {
+    const payload = this.mapToRollInput(gameId, rolls);
+
+    return this.http
+      .post<RollResult>(`${environment.apiUrl}/turn`, payload)
+      .pipe(
+        map((res) => {
+          if (res.isSuccess && res.state) this.updateGameState(res.state);
+          else this.resetTurn();
+          return res;
+        }),
+        catchError((err) => {
+          this.resetTurn();
+          return of({
+            isSuccess: false,
+            errorMessage:
+              err.error?.message ?? ERROR_MESSAGES.FAILED_BOWLING_SERVICE,
+          });
+        })
+      );
+  }
+
+  // --- Private Helpers ---
+  private updateGameState(game: Game): Game {
+    this._currentGame.set(this.reconcileGame(game));
+    this.resetTurn();
+    return game;
+  }
+
+  private resetTurn(): void {
+    this._currentFrameRolls.set([]);
+  }
+
+  private mapToRollInput(gameId: number, rolls: number[]): RollInput {
     return {
-      gameId: gameId,
+      gameId,
       roll1: rolls[0],
       roll2: rolls.length > 1 ? rolls[1] : null,
       roll3: rolls.length > 2 ? rolls[2] : null,
     };
   }
 
-  private sendStartGameApiRequest(name: string): Observable<Game> {
-    return this.http.post<Game>(
-      `${environment.apiUrl}/start`,
-      { gameName: name },
-      {
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
+  private reconcileGame(newGame: Game): Game {
+    const oldGame = this._currentGame();
+    if (!oldGame || oldGame.id !== newGame.id) {
+      return newGame;
+    }
+
+    const newFrames = newGame.frames.map((newFrame, index) => {
+      const oldFrame = oldGame.frames[index];
+      if (oldFrame && this.areFramesEqual(oldFrame, newFrame)) return oldFrame;
+      return newFrame;
+    });
+
+    return { ...newGame, frames: newFrames };
   }
 
-  private postRoll(rollInput: RollInput): Observable<RollResult> {
-    return this.http
-      .post<RollResult>(`${environment.apiUrl}/turn`, rollInput)
-      .pipe(
-        map((result) => {
-          if (result.isSuccess && result.state) {
-            this.setCurrentGame(result.state);
-            this.resetCurrentRolls();
-          } else {
-            this.resetCurrentRolls();
-          }
-          return result;
-        }),
-        catchError((error) => {
-          this.resetCurrentRolls();
-          return of({
-            isSuccess: false,
-            errorMessage:
-              error.error?.message ||
-              error.message ||
-              ERROR_MESSAGES.FAILED_BOWLING_SERVICE,
-          });
-        })
-      );
+  private areFramesEqual(f1: Frame, f2: Frame): boolean {
+    return (
+      f1.score === f2.score &&
+      f1.roll1 === f2.roll1 &&
+      f1.roll2 === f2.roll2 &&
+      f1.roll3 === f2.roll3
+    );
   }
 }

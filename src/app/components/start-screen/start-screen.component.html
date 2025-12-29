@@ -1,7 +1,24 @@
 <div class="start-screen">
   <div class="container">
     <h1 class="title">Bowling Score App</h1>
-    <p class="subtitle">Enter your name to start a new game</p>
+    <p class="subtitle">{{ subtitleText() }}</p>
+
+    <div class="mode-toggle">
+      <button
+        type="button"
+        [class.active]="isNewGame()"
+        (click)="toggleGameMode(true)"
+      >
+        New Game
+      </button>
+      <button
+        type="button"
+        [class.active]="!isNewGame()"
+        (click)="toggleGameMode(false)"
+      >
+        Continue Game
+      </button>
+    </div>
 
     <form
       [formGroup]="playerForm"
@@ -10,38 +27,41 @@
       novalidate
     >
       <div class="form-group">
+        @let ctrl = identifierControl; @let msg = validationMessage(); @let
+        isInvalid = ctrl?.invalid && ctrl?.touched;
         <input
-          id="playerName"
+          id="identifier"
           type="text"
-          formControlName="playerName"
-          placeholder="Enter your name"
+          formControlName="identifier"
+          [placeholder]="placeholderText()"
           class="player-input"
-          [class.error]="
-            playerNameControl?.invalid && playerNameControl?.touched
-          "
-          aria-label="Player name"
-          aria-required="true"
-          aria-invalid="playerNameControl?.invalid && playerNameControl?.touched"
+          [class.error]="isInvalid || (errorMessage() && !ctrl?.dirty)"
+          [attr.aria-invalid]="isInvalid"
         />
-        @if ((playerNameControl?.invalid && playerNameControl?.touched) ||
-        errorMessage()) {
+        @if (msg) {
         <div class="error-message" role="alert">
-          @if (playerNameControl?.hasError('required')) { Player name is
-          required. } @else {
-          {{ errorMessage() }}
-          }
+          {{ msg }}
         </div>
         }
       </div>
 
-      <button
-        type="submit"
-        class="start-button"
-        [disabled]="playerForm.invalid || isLoading()"
-        aria-label="Start game"
-      >
-        @if (isLoading()) { Starting... } @else { Start Game }
-      </button>
+      <div class="actions">
+        <button
+          type="submit"
+          class="start-button"
+          [disabled]="playerForm.invalid || isLoading()"
+        >
+          {{ submitButtonText() }}
+        </button>
+
+        <button
+          type="button"
+          class="secondary-button"
+          (click)="onShowHighscores()"
+        >
+          View Highscores
+        </button>
+      </div>
     </form>
   </div>
 </div>
