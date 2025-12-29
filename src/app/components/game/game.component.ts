@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 import { GameService } from '../../services/game.service';
 import { ScoreboardDisplayComponent } from '../scoreboard-display/scoreboard-display.component';
 import { RollInputComponent } from '../roll-input/roll-input.component';
-import { ERROR_MESSAGES } from '../../constants/game.constants';
+import { ERROR_MESSAGES, GAME_CONSTANTS } from '../../constants/game.constants';
 
 @Component({
   selector: 'app-game',
@@ -34,6 +34,19 @@ export class GameComponent {
   });
   readonly totalScore = computed(() => {
     return this.frames().reduce((acc, frame) => acc + frame.score, 0);
+  });
+
+  readonly maxAllowedPins = computed(() => {
+    const rolls = this.currentFrameRolls();
+    const maxPins = GAME_CONSTANTS.MAX_PINS;
+
+    const lastRoll = rolls[rolls.length - 1] ?? 0;
+    const prevRoll = rolls[rolls.length - 2] ?? 0;
+    const isStrike = lastRoll === maxPins;
+    const isSpare = prevRoll + lastRoll === maxPins;
+
+    if (isStrike || isSpare) return maxPins;
+    return maxPins - lastRoll;
   });
 
   handleRoll(pins: number): void {

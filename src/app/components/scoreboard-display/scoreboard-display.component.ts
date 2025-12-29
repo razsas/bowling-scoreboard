@@ -4,7 +4,7 @@ import {
   computed,
   input,
 } from '@angular/core';
-import { Frame, RollNumber } from '../../models/game.models';
+import { Frame, FrameVM, RollNumber, ROLLS } from '../../models/game.models';
 import { FrameComponent } from '../frame/frame.component';
 import { GAME_CONSTANTS } from '../../constants/game.constants';
 
@@ -43,11 +43,11 @@ export class ScoreboardDisplayComponent {
         frameNumber: idx + 1,
         ariaLabel: `Frame ${idx + 1}`,
         isTenthFrame: isLastFrame,
-        roll1: frame ? this.formatRoll(frame, 'roll1') : '',
-        roll2: frame ? this.formatRoll(frame, 'roll2') : '',
-        roll3: frame ? this.formatRoll(frame, 'roll3') : '',
+        roll1: frame ? this.formatRoll(frame, ROLLS['first']) : '',
+        roll2: frame ? this.formatRoll(frame, ROLLS['second']) : '',
+        roll3: frame ? this.formatRoll(frame, ROLLS['third']) : '',
         score: hasScore ? cumulative : '',
-      } as FrameVM;
+      };
     });
   });
 
@@ -61,7 +61,8 @@ export class ScoreboardDisplayComponent {
       roll3: rolls[2] ?? null,
       score: 0,
       isStrike: rolls[0] === GAME_CONSTANTS.MAX_PINS,
-      isSpare: (rolls[0] ?? 0) + (rolls[1] ?? 0) === GAME_CONSTANTS.MAX_PINS &&
+      isSpare:
+        (rolls[0] ?? 0) + (rolls[1] ?? 0) === GAME_CONSTANTS.MAX_PINS &&
         rolls[0] !== GAME_CONSTANTS.MAX_PINS,
     };
   }
@@ -74,33 +75,22 @@ export class ScoreboardDisplayComponent {
     const isLast = frame.frameIndex === LAST_FRAME_INDEX;
 
     // Strike Logic
-    if (val === MAX_PINS) {
-      // In 10th frame, all rolls can be strikes. In others, only roll1.
-      if (isLast || rollNum === 'roll1') return 'X';
+    if (val === MAX_PINS && (isLast || rollNum === ROLLS['first'])) {
+      return 'X';
     }
 
     // Spare Logic
-    if (rollNum === 'roll2') {
+    if (rollNum === ROLLS['second']) {
       const prev = frame.roll1 ?? 0;
       if (prev !== MAX_PINS && prev + val === MAX_PINS) return '/';
     }
 
-    // 10th frame 3rd roll spare logic (e.g., X, 7, 3)
-    if (isLast && rollNum === 'roll3') {
+    // 10th frame 3rd roll spare logic (e.g., X, 7, 3, but not 7, 3, 7)
+    if (isLast && rollNum === ROLLS['third'] && !frame.isSpare) {
       const prev = frame.roll2 ?? 0;
       if (prev !== MAX_PINS && prev + val === MAX_PINS) return '/';
     }
 
     return val.toString();
   }
-}
-
-interface FrameVM {
-  frameNumber: number;
-  roll1: string;
-  roll2: string;
-  roll3: string;
-  score: number | '';
-  isTenthFrame: boolean;
-  ariaLabel: string;
 }

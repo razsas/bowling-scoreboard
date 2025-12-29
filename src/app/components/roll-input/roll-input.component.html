@@ -1,45 +1,28 @@
 @if (!isGameComplete()) {
-<div class="throw-input-section">
-  <form [formGroup]="rollForm" (ngSubmit)="submitRoll()" class="throw-form">
-    <div class="form-group">
-      <label for="pins" class="input-label">Pins knocked down this throw</label>
-      <input
-        id="pins"
-        type="number"
-        formControlName="pins"
-        min="0"
-        max="10"
-        class="pins-input"
-        [class.error]="pinsControl?.invalid && pinsControl?.touched"
-        placeholder="0-10"
-        aria-label="Pins knocked down"
-        aria-required="true"
-        aria-invalid="pinsControl?.invalid && pinsControl?.touched"
-        (input)="onInput()"
-      />
+<div class="roll-input-container">
+  <h3>Enter Pins Knocked Down</h3>
 
-      @if (pinsControl?.invalid && pinsControl?.touched) {
-      <div class="error-message" role="alert">
-        @if (pinsControl?.hasError('required')) { Please enter the number of
-        pins knocked down. } @else if (pinsControl?.hasError('min') ||
-        pinsControl?.hasError('max')) { Pins must be between 0 and 10. }
-      </div>
-      } @if (errorMessage()) {
-      <div class="error-message" role="alert">
-        {{ errorMessage() }}
-      </div>
-      }
-    </div>
-
+  <div class="pins-grid">
+    @for (pins of pinOptions; track pins) {
     <button
-      type="submit"
-      class="submit-button"
-      [disabled]="rollForm.invalid || isLoading()"
-      aria-label="Submit throw"
+      type="button"
+      class="pin-btn"
+      [disabled]="isLoading() || pins > maxAllowedPins()"
+      (click)="onPinClick(pins)"
+      [attr.aria-label]="pins + ' pins'"
     >
-      @if (isLoading()) { Submitting... } @else { Submit Throw }
+      {{ pins }}
     </button>
-  </form>
+    }
+  </div>
+
+  @if (errorMessage()) {
+  <div class="error-message" role="alert">
+    {{ errorMessage() }}
+  </div>
+  } @if (isLoading()) {
+  <div class="loading-indicator">Processing...</div>
+  }
 </div>
 } @else {
 <div class="game-complete">
@@ -50,7 +33,6 @@
     type="button"
     class="view-highscores-button"
     (click)="navigateToHighscores.emit()"
-    aria-label="View high scores"
   >
     View High Scores
   </button>

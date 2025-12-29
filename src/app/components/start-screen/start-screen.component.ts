@@ -11,6 +11,7 @@ import { GameService } from '../../services/game.service';
 import { CommonModule } from '@angular/common';
 import { finalize } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { GAME_MODES, GameMode } from '../../models/game.models';
 
 @Component({
   selector: 'app-start-screen',
@@ -114,10 +115,3 @@ export class StartScreenComponent {
     return this.playerForm.get('identifier');
   }
 }
-
-export type GameMode = 'New' | 'Continue';
-
-export const GAME_MODES: Record<string, GameMode> = {
-  New: 'New',
-  Continue: 'Continue',
-} as const;

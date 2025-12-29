@@ -1,98 +1,125 @@
-.throw-input-section {
-  background: white;
-  border-radius: 0.5rem;
-  padding: 2rem;
-  max-width: 500px;
-  margin: 2rem auto 0 auto;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-}
-
-.throw-form {
+.roll-input-container {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 1.5rem;
-}
+  margin-top: 2rem;
+  width: 100%;
+  max-width: 600px; // Limit width for better grid appearance
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.input-label {
-  font-weight: 600;
-  font-size: 1.1rem;
-  color: #333;
-}
-
-.pins-input {
-  padding: 1rem;
-  font-size: 1.2rem;
-  border: 2px solid #ddd;
-  border-radius: 0.5rem;
-  transition: border-color 0.3s;
-  text-align: center;
-  &:focus {
-    outline: none;
-    border-color: #667eea;
+  h3 {
+    margin: 0;
+    color: #444;
+    font-size: 1.2rem;
   }
-  &.error {
-    border-color: #e74c3c;
+}
+
+.pins-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr); // 0-5 on first row? Or maybe adaptive.
+  // 11 items. 6 and 5? 
+  // Let's try flexible wrapping
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.8rem;
+  width: 100%;
+}
+
+.pin-btn {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  border: 2px solid #007bff;
+  background-color: white;
+  color: #007bff;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+  &:hover:not(:disabled) {
+    background-color: #007bff;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    border-color: #ccc;
+    color: #ccc;
+    background-color: #f9f9f9;
+    cursor: not-allowed;
+    box-shadow: none;
   }
 }
 
 .error-message {
-  color: #e74c3c;
-  font-size: 0.9rem;
-  margin-top: 0.25rem;
+  color: #d32f2f;
+  background-color: #ffebee;
+  padding: 0.8rem;
+  border-radius: 4px;
+  width: 100%;
+  text-align: center;
+  border: 1px solid #ffcdd2;
 }
 
-.submit-button,
-.view-highscores-button {
-  padding: 1rem 2rem;
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: white;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  &:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-  }
-  &:active:not(:disabled) {
-    transform: translateY(0);
-  }
-  &:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-  &:focus {
-    outline: 2px solid #667eea;
-    outline-offset: 2px;
-  }
+.loading-indicator {
+  color: #666;
+  font-style: italic;
 }
 
 .game-complete {
-  background: white;
-  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
   padding: 2rem;
-  max-width: 500px;
-  margin: 2rem auto 0 auto;
-  text-align: center;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  background-color: #e8f5e9;
+  border-radius: 12px;
+  width: 100%;
+
   .complete-message {
     font-size: 1.5rem;
-    margin-bottom: 1rem;
-    color: #333;
-    strong {
-      font-size: 2rem;
-      color: #667eea;
+    color: #2e7d32;
+    margin: 0;
+  }
+
+  .view-highscores-button {
+    padding: 0.8rem 1.5rem;
+    background-color: #2e7d32;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+        background-color: #1b5e20;
     }
   }
-  .view-highscores-button {
-    margin-top: 1rem;
+}
+
+// Responsive adjustments
+@media (max-width: 500px) {
+  .pin-btn {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1rem;
+  }
+  
+  .pins-grid {
+    gap: 0.5rem;
   }
 }
