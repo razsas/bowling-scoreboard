@@ -2,14 +2,12 @@
   display: flex;
   justify-content: center;
   margin-bottom: 2rem;
-  overflow-x: auto;
 }
 
 .scoreboard {
-  background: white;
   border-radius: 0.5rem;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   display: flex;
-  min-width: fit-content;
+  flex-wrap: wrap;
+  justify-content: center;
+  row-gap: 1rem;
 }
-

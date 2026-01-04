@@ -5,34 +5,35 @@
   gap: 1.5rem;
   margin-top: 2rem;
   width: 100%;
-  max-width: 600px; // Limit width for better grid appearance
 
-  h3 {
+  .input-title {
     margin: 0;
-    color: #444;
+    color: var(--color-gray-700);
     font-size: 1.2rem;
   }
 }
 
 .pins-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr); // 0-5 on first row? Or maybe adaptive.
-  // 11 items. 6 and 5? 
-  // Let's try flexible wrapping
+  grid-template-columns: repeat(6, 1fr);
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.8rem;
   width: 100%;
+
+  @media (max-width: 500px) {
+    gap: 0.5rem;
+  }
 }
 
 .pin-btn {
   width: 3.5rem;
   height: 3.5rem;
   border-radius: 50%;
-  border: 2px solid #007bff;
-  background-color: white;
-  color: #007bff;
+  border: 2px solid var(--color-primary);
+  background-color: var(--color-white);
+  color: var(--color-primary);
   font-size: 1.2rem;
   font-weight: bold;
   cursor: pointer;
@@ -40,13 +41,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px var(--shadow-color-light);
 
   &:hover:not(:disabled) {
-    background-color: #007bff;
-    color: white;
+    background-color: var(--color-primary);
+    color: var(--color-white);
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 8px var(--shadow-color-medium);
   }
 
   &:active:not(:disabled) {
@@ -54,26 +55,32 @@
   }
 
   &:disabled {
-    border-color: #ccc;
-    color: #ccc;
-    background-color: #f9f9f9;
+    border-color: var(--color-gray-400);
+    color: var(--color-gray-400);
+    background-color: var(--color-gray-50);
     cursor: not-allowed;
     box-shadow: none;
+  }
+
+  @media (max-width: 500px) {
+    width: 3rem;
+    height: 3rem;
+    font-size: 1rem;
   }
 }
 
 .error-message {
-  color: #d32f2f;
-  background-color: #ffebee;
+  color: var(--color-danger-text);
+  background-color: var(--color-danger-bg);
   padding: 0.8rem;
   border-radius: 4px;
   width: 100%;
   text-align: center;
-  border: 1px solid #ffcdd2;
+  border: 1px solid var(--color-danger-border);
 }
 
 .loading-indicator {
-  color: #666;
+  color: var(--color-gray-600);
   font-style: italic;
 }
 
@@ -84,20 +91,20 @@
   gap: 1.5rem;
   margin-top: 2rem;
   padding: 2rem;
-  background-color: #e8f5e9;
+  background-color: var(--color-success-bg);
   border-radius: 12px;
   width: 100%;
 
   .complete-message {
     font-size: 1.5rem;
-    color: #2e7d32;
+    color: var(--color-success-text);
     margin: 0;
   }
 
   .view-highscores-button {
     padding: 0.8rem 1.5rem;
-    background-color: #2e7d32;
-    color: white;
+    background-color: var(--color-success-text);
+    color: var(--color-white);
     border: none;
     border-radius: 6px;
     font-size: 1.1rem;
@@ -106,20 +113,7 @@
     transition: background-color 0.2s;
 
     &:hover {
-        background-color: #1b5e20;
+      background-color: var(--color-success-darker);
     }
-  }
-}
-
-// Responsive adjustments
-@media (max-width: 500px) {
-  .pin-btn {
-    width: 3rem;
-    height: 3rem;
-    font-size: 1rem;
-  }
-  
-  .pins-grid {
-    gap: 0.5rem;
   }
 }
