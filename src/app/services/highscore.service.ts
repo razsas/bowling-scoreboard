@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { HighscoreEntry } from '../models/game.models';
 import { catchError, of, Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environments';
-import { EndPoints, ERROR_MESSAGES } from '../constants/game.constants';
+import { EndPoints, ErrorMessages } from '../constants/game.constants';
 
 @Injectable()
 export class HighscoreService {
@@ -25,7 +25,7 @@ export class HighscoreService {
     return this.getScores().pipe(
       tap((scores) => this._highscores.set(scores)),
       catchError(() => {
-        this._currentError.set(ERROR_MESSAGES.FAILED_LOAD_HIGHSCORES);
+        this._currentError.set(ErrorMessages.FailedLoadHighscores);
         return of([]);
       })
     );

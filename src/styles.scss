@@ -49,6 +49,12 @@
   --shadow-color-light: rgba(0, 0, 0, 0.1);
   --shadow-color-medium: rgba(0, 0, 0, 0.2);
   --shadow-hover-bg: rgba(255, 255, 255, 0.5);
+
+  --gradient-main-bg: linear-gradient(
+    135deg,
+    var(--color-brand-primary) 0%,
+    var(--color-brand-secondary) 100%
+  );
 }
 
 html,
@@ -64,4 +70,61 @@ body {
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+.btn-primary {
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--color-white);
+  background: linear-gradient(
+    135deg,
+    var(--color-brand-primary) 0%,
+    var(--color-brand-secondary) 100%
+  );
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px var(--color-brand-shadow-hover);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  &:focus {
+    outline: 2px solid var(--color-brand-primary);
+    outline-offset: 2px;
+  }
+}
+
+.btn-secondary {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  color: var(--color-brand-primary);
+  background: transparent;
+  border: 2px solid var(--color-brand-primary);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+
+  &:hover {
+    background: var(--color-primary-focus-shadow);
+  }
 }

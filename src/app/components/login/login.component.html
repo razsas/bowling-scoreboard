@@ -1,13 +1,14 @@
 <div class="auth-container">
   <div class="auth-box">
-    <h1>Welcome Back</h1>
+    <h1 class="auth-title">Welcome Back</h1>
     <p class="subtitle">Please sign in to continue</p>
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
       <!-- Username Field -->
       <div class="form-group">
-        <label for="username">Username</label>
+        <label class="form-label" for="username">Username</label>
         <input
+          class="form-input"
           id="username"
           type="text"
           formControlName="username"
@@ -25,8 +26,9 @@
 
       <!-- Password Field -->
       <div class="form-group">
-        <label for="password">Password</label>
+        <label class="form-label" for="password">Password</label>
         <input
+          class="form-input"
           id="password"
           type="password"
           formControlName="password"
@@ -49,12 +51,19 @@
       </div>
       }
 
-      <button type="submit" [disabled]="isLoading()">
+      <button type="submit" class="btn-primary" [disabled]="isLoading()">
         @if (isLoading()) { Signing in... } @else { Sign In }
       </button>
 
+      <button type="button" class="btn-secondary" routerLink="/">
+        Return to Start Screen
+      </button>
+
       <div class="auth-footer">
-        <p>Don't have an account? <a routerLink="/subscribe">Subscribe</a></p>
+        <p class="auth-footer-text">
+          Don't have an account?
+          <a class="auth-link" routerLink="/subscribe">Subscribe</a>
+        </p>
       </div>
     </form>
   </div>

@@ -1,0 +1,151 @@
+.auth-container,
+.start-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gradient-main-bg);
+  padding: 2rem;
+}
+
+.auth-box,
+.container {
+  background: var(--color-white);
+  padding: 3rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 40px var(--shadow-color-medium);
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+
+  @media (max-width: 500px) {
+    padding: 1.5rem;
+  }
+}
+
+// Title styles (shared by all)
+.auth-title,
+.title {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-gray-800);
+  text-align: center;
+
+  @media (max-width: 500px) {
+    font-size: 2rem;
+  }
+}
+
+// Subtitle styles (shared by all)
+.subtitle {
+  color: var(--color-gray-600);
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+  text-align: center;
+
+  @media (max-width: 500px) {
+    font-size: 1rem;
+  }
+}
+
+// Form styles (shared by all)
+.auth-form,
+.player-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  text-align: left;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  @media (max-width: 500px) {
+    gap: 1rem;
+  }
+}
+
+// Label styles (auth forms)
+.form-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-gray-700);
+}
+
+// Input styles (shared by all)
+.form-input,
+.player-input {
+  padding: 1rem;
+  border: 2px solid var(--color-gray-300);
+  border-radius: 0.5rem;
+  font-size: 1.1rem;
+  transition: border-color 0.3s;
+  width: 100%;
+  box-sizing: border-box;
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-brand-primary);
+  }
+
+  &.error {
+    border-color: var(--color-danger-light);
+  }
+
+  @media (max-width: 500px) {
+    padding: 0.75rem;
+    font-size: 1rem;
+  }
+}
+
+// Error message styles
+.error-msg,
+.error-message {
+  color: var(--color-danger-light);
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+}
+
+// Alert styles (auth forms)
+.alert {
+  padding: 0.8rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+
+  &.error {
+    background-color: var(--color-danger-bg);
+    color: var(--color-danger-dark);
+    border: 1px solid var(--color-danger-border);
+  }
+}
+
+// Footer styles (auth forms)
+.auth-footer {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: var(--color-gray-600);
+
+  .auth-footer-text {
+    margin: 0;
+  }
+
+  .auth-link {
+    color: var(--color-brand-primary);
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+@media (max-width: 500px) {
+  .btn-primary,
+  .btn-secondary {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
+}

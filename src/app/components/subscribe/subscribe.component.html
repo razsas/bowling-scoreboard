@@ -1,13 +1,14 @@
 <div class="auth-container">
   <div class="auth-box">
-    <h1>Create Account</h1>
+    <h1 class="auth-title">Create Account</h1>
     <p class="subtitle">Join us to start bowling!</p>
 
     <form [formGroup]="subscribeForm" (ngSubmit)="onSubmit()" class="auth-form">
       <!-- Username Field -->
       <div class="form-group">
-        <label for="username">Username</label>
+        <label class="form-label" for="username">Username</label>
         <input
+          class="form-input"
           id="username"
           type="text"
           formControlName="username"
@@ -27,8 +28,9 @@
 
       <!-- Password Field -->
       <div class="form-group">
-        <label for="password">Password</label>
+        <label class="form-label" for="password">Password</label>
         <input
+          class="form-input"
           id="password"
           type="password"
           formControlName="password"
@@ -53,12 +55,19 @@
       </div>
       }
 
-      <button type="submit" [disabled]="isLoading()">
+      <button type="submit" class="btn-primary" [disabled]="isLoading()">
         @if (isLoading()) { Creating account... } @else { Subscribe }
       </button>
 
+      <button type="button" class="btn-secondary" routerLink="/">
+        Return to Start Screen
+      </button>
+
       <div class="auth-footer">
-        <p>Already have an account? <a routerLink="/login">Log in</a></p>
+        <p class="auth-footer-text">
+          Already have an account?
+          <a class="auth-link" routerLink="/login">Log in</a>
+        </p>
       </div>
     </form>
   </div>
