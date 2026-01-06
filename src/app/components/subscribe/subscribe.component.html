@@ -1,0 +1,65 @@
+<div class="auth-container">
+  <div class="auth-box">
+    <h1>Create Account</h1>
+    <p class="subtitle">Join us to start bowling!</p>
+
+    <form [formGroup]="subscribeForm" (ngSubmit)="onSubmit()" class="auth-form">
+      <!-- Username Field -->
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input
+          id="username"
+          type="text"
+          formControlName="username"
+          [class.error]="
+            subscribeForm.get('username')?.invalid &&
+            subscribeForm.get('username')?.touched
+          "
+          placeholder="Choose a username"
+        />
+        @if (subscribeForm.get('username')?.touched) { @if
+        (subscribeForm.get('username')?.hasError('required')) {
+        <span class="error-msg">Username is required</span>
+        } @if (subscribeForm.get('username')?.hasError('minlength')) {
+        <span class="error-msg">Must be at least 3 characters</span>
+        } }
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          [class.error]="
+            subscribeForm.get('password')?.invalid &&
+            subscribeForm.get('password')?.touched
+          "
+          placeholder="Create a password"
+        />
+        @if (subscribeForm.get('password')?.touched) { @if
+        (subscribeForm.get('password')?.hasError('required')) {
+        <span class="error-msg">Password is required</span>
+        } @if (subscribeForm.get('password')?.hasError('minlength')) {
+        <span class="error-msg">Must be at least 6 characters</span>
+        } }
+      </div>
+
+      <!-- General Error Message -->
+      @if (errorMessage()) {
+      <div class="alert error">
+        {{ errorMessage() }}
+      </div>
+      }
+
+      <button type="submit" [disabled]="isLoading()">
+        @if (isLoading()) { Creating account... } @else { Subscribe }
+      </button>
+
+      <div class="auth-footer">
+        <p>Already have an account? <a routerLink="/login">Log in</a></p>
+      </div>
+    </form>
+  </div>
+</div>

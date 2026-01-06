@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
 import { GameService } from '../../services/game.service';
 import { ScoreboardDisplayComponent } from '../scoreboard-display/scoreboard-display.component';
 import { RollInputComponent } from '../roll-input/roll-input.component';
-import { ERROR_MESSAGES, GAME_CONSTANTS } from '../../constants/game.constants';
+import { ErrorMessages, GameConstants } from '../../constants/game.constants';
 
 @Component({
   selector: 'app-game',
@@ -38,7 +38,7 @@ export class GameComponent {
 
   readonly maxAllowedPins = computed(() => {
     const rolls = this.currentFrameRolls();
-    const maxPins = GAME_CONSTANTS.MAX_PINS;
+    const maxPins = GameConstants.MaxPins;
 
     const lastRoll = rolls[rolls.length - 1] ?? 0;
     const prevRoll = rolls[rolls.length - 2] ?? 0;
@@ -56,7 +56,7 @@ export class GameComponent {
     this.gameService.processRoll(pins).subscribe({
       next: () => this.isLoading.set(false),
       error: (err) => {
-        this.errorMessage.set(err.message || ERROR_MESSAGES.FAILED_TO_ROLL);
+        this.errorMessage.set(err.message || ErrorMessages.FailedToRoll);
         this.isLoading.set(false);
       },
     });

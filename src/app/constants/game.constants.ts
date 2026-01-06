@@ -1,21 +1,31 @@
-export const GAME_CONSTANTS = {
-  MAX_PINS: 10,
-  MAX_FRAMES: 10,
-  LAST_FRAME_INDEX: 9,
-  MIN_PINS: 0,
-  ROLLS_PER_REGULAR_FRAME: 2,
-  MAX_ROLLS_LAST_FRAME: 3,
+export const GameConstants = {
+  MaxPins: 10,
+  MaxFrames: 10,
+  LastFrameIndex: 9,
+  MinPins: 0,
+  RollsPerRegularFrame: 2,
+  MaxRollsLastFrame: 3,
 } as const;
 
-export const ERROR_MESSAGES = {
-  NO_ACTIVE_GAME: 'No active game. Please start a new game first.',
-  GAME_COMPLETE: 'Game is already complete.',
-  INVALID_PIN_COUNT: (min: number, max: number) => `Pins must be between ${min} and ${max}.`,
-  INVALID_FRAME_SUM: (roll1: number, roll2: number, sum: number, max: number) => 
+export const ErrorMessages = {
+  NoActiveGame: 'No active game. Please start a new game first.',
+  GameComplete: 'Game is already complete.',
+  InvalidPinCount: (min: number, max: number) =>
+    `Pins must be between ${min} and ${max}.`,
+  InvalidFrameSum: (roll1: number, roll2: number, sum: number, max: number) =>
     `Invalid frame: ${roll1} + ${roll2} = ${sum} > ${max}`,
-  FAILED_TO_START: 'Failed to start game. Please try again.',
-  FAILED_TO_ROLL: 'Failed to add throw. Please try again.',
-  FAILED_BOWLING_SERVICE: 'Failed to communicate with bowling service.',
-  FAILED_LOAD_HIGHSCORES: 'Failed to load highscores',
+  FailedToStart: 'Failed to start game. Please try again.',
+  FailedToRoll: 'Failed to add throw. Please try again.',
+  FailedBowlingService: 'Failed to communicate with bowling service.',
+  FailedLoadHighscores: 'Failed to load highscores',
 } as const;
 
+export const EndPoints = {
+  StartNewGame: '/bowling/start/',
+  GetGame: '/bowling/',
+  Turn: '/bowling/turn',
+  Highscores: '/bowling/highscores',
+  Login: '/auth/login',
+  Register: '/auth/register',
+  Logout: '/auth/logout',
+} as const;

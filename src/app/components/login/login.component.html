@@ -1,0 +1,61 @@
+<div class="auth-container">
+  <div class="auth-box">
+    <h1>Welcome Back</h1>
+    <p class="subtitle">Please sign in to continue</p>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+      <!-- Username Field -->
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input
+          id="username"
+          type="text"
+          formControlName="username"
+          [class.error]="
+            loginForm.get('username')?.invalid &&
+            loginForm.get('username')?.touched
+          "
+          placeholder="Enter your username"
+        />
+        @if (loginForm.get('username')?.hasError('required') &&
+        loginForm.get('username')?.touched) {
+        <span class="error-msg">Username is required</span>
+        }
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          [class.error]="
+            loginForm.get('password')?.invalid &&
+            loginForm.get('password')?.touched
+          "
+          placeholder="Enter your password"
+        />
+        @if (loginForm.get('password')?.hasError('required') &&
+        loginForm.get('password')?.touched) {
+        <span class="error-msg">Password is required</span>
+        }
+      </div>
+
+      <!-- General Error Message -->
+      @if (errorMessage()) {
+      <div class="alert error">
+        {{ errorMessage() }}
+      </div>
+      }
+
+      <button type="submit" [disabled]="isLoading()">
+        @if (isLoading()) { Signing in... } @else { Sign In }
+      </button>
+
+      <div class="auth-footer">
+        <p>Don't have an account? <a routerLink="/subscribe">Subscribe</a></p>
+      </div>
+    </form>
+  </div>
+</div>

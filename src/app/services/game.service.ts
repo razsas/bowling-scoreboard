@@ -3,7 +3,11 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, map, of, throwError } from 'rxjs';
 import { Frame, Game, RollInput, RollResult } from '../models/game.models';
 import { environment } from '../../environments/environments';
-import { GAME_CONSTANTS, ERROR_MESSAGES } from '../constants/game.constants';
+import {
+  GameConstants,
+  ErrorMessages,
+  EndPoints,
+} from '../constants/game.constants';
 import { BowlingGameLogic } from '../utils/bowling-game.logic';
 
 @Injectable({
@@ -24,33 +28,40 @@ export class GameService {
 
   // --- Public API ---
   startNewGame(name: string): Observable<Game> {
-    return this.http.get<Game>(`${environment.apiUrl}/start/${name}`).pipe(
-      map((game) => {
-        this.updateGameState(game);
-        return game;
-      }),
-      catchError((err) =>
-        throwError(() => new Error(`Failed to start: ${err.message}`))
-      )
-    );
+    return this.http
+      .get<Game>(`${environment.apiUrl}${EndPoints.StartNewGame}${name}`, {
+        withCredentials: true,
+      })
+      .pipe(
+        map((game) => {
+          this.updateGameState(game);
+          return game;
+        }),
+        catchError((err) =>
+          throwError(() => new Error(`Failed to start: ${err.message}`))
+        )
+      );
   }
 
   loadGame(gameId: number): Observable<Game> {
-    return this.http.get<Game>(`${environment.apiUrl}/${gameId}`).pipe(
-      map((game) => {
-        this.updateGameState(game);
-        return game;
-      }),
-      catchError((err) =>
-        throwError(() => new Error(`Failed to load game: ${err.message}`))
-      )
-    );
+    return this.http
+      .get<Game>(`${environment.apiUrl}${EndPoints.GetGame}${gameId}`, {
+        withCredentials: true,
+      })
+      .pipe(
+        map((game) => {
+          this.updateGameState(game);
+          return game;
+        }),
+        catchError((err) =>
+          throwError(() => new Error(`Failed to load game: ${err.message}`))
+        )
+      );
   }
 
   processRoll(pins: number): Observable<RollResult> {
     const game = this.currentGame();
-    const isLastFrame =
-      this.frames().length === GAME_CONSTANTS.LAST_FRAME_INDEX;
+    const isLastFrame = this.frames().length === GameConstants.LastFrameIndex;
 
     // 1. Validation
     const validationError = BowlingGameLogic.validateRoll(game, pins);
@@ -82,7 +93,9 @@ export class GameService {
     const payload = this.mapToRollInput(gameId, rolls);
 
     return this.http
-      .post<RollResult>(`${environment.apiUrl}/turn`, payload)
+      .post<RollResult>(`${environment.apiUrl}${EndPoints.Turn}`, payload, {
+        withCredentials: true,
+      })
       .pipe(
         map((res) => {
           if (res.isSuccess && res.state) this.updateGameState(res.state);
@@ -94,7 +107,7 @@ export class GameService {
           return of({
             isSuccess: false,
             errorMessage:
-              err.error?.message ?? ERROR_MESSAGES.FAILED_BOWLING_SERVICE,
+              err.error?.message ?? ErrorMessages.FailedBowlingService,
           });
         })
       );

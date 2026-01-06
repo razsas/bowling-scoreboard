@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import { Frame, FrameVM, RollNumber, ROLLS } from '../../models/game.models';
 import { FrameComponent } from '../frame/frame.component';
-import { GAME_CONSTANTS } from '../../constants/game.constants';
+import { GameConstants } from '../../constants/game.constants';
 
 @Component({
   selector: 'app-scoreboard-display',
@@ -22,11 +22,11 @@ export class ScoreboardDisplayComponent {
   readonly viewFrames = computed<FrameVM[]>(() => {
     const finished = this.frames();
     const liveRolls = this.currentFrameRolls();
-    const lastIdx = GAME_CONSTANTS.LAST_FRAME_INDEX;
+    const lastIdx = GameConstants.LastFrameIndex;
 
     let cumulative = 0;
 
-    return Array.from({ length: GAME_CONSTANTS.MAX_FRAMES }, (_, idx) => {
+    return Array.from({ length: GameConstants.MaxFrames }, (_, idx) => {
       const isLastFrame = idx === lastIdx;
       // Get frame data: either from finished list or create a "live" one
       const frame =
@@ -60,10 +60,10 @@ export class ScoreboardDisplayComponent {
       roll2: rolls[1] ?? null,
       roll3: rolls[2] ?? null,
       score: 0,
-      isStrike: rolls[0] === GAME_CONSTANTS.MAX_PINS,
+      isStrike: rolls[0] === GameConstants.MaxPins,
       isSpare:
-        (rolls[0] ?? 0) + (rolls[1] ?? 0) === GAME_CONSTANTS.MAX_PINS &&
-        rolls[0] !== GAME_CONSTANTS.MAX_PINS,
+        (rolls[0] ?? 0) + (rolls[1] ?? 0) === GameConstants.MaxPins &&
+        rolls[0] !== GameConstants.MaxPins,
     };
   }
 
@@ -71,24 +71,24 @@ export class ScoreboardDisplayComponent {
     const val = frame[rollNum];
     if (val === null || val === undefined) return '';
 
-    const { MAX_PINS, LAST_FRAME_INDEX } = GAME_CONSTANTS;
-    const isLast = frame.frameIndex === LAST_FRAME_INDEX;
+    const { MaxPins, LastFrameIndex } = GameConstants;
+    const isLast = frame.frameIndex === LastFrameIndex;
 
     // Strike Logic
-    if (val === MAX_PINS && (isLast || rollNum === ROLLS['first'])) {
+    if (val === MaxPins && (isLast || rollNum === ROLLS['first'])) {
       return 'X';
     }
 
     // Spare Logic
     if (rollNum === ROLLS['second']) {
       const prev = frame.roll1 ?? 0;
-      if (prev !== MAX_PINS && prev + val === MAX_PINS) return '/';
+      if (prev !== MaxPins && prev + val === MaxPins) return '/';
     }
 
     // 10th frame 3rd roll spare logic (e.g., X, 7, 3, but not 7, 3, 7)
     if (isLast && rollNum === ROLLS['third'] && !frame.isSpare) {
       const prev = frame.roll2 ?? 0;
-      if (prev !== MAX_PINS && prev + val === MAX_PINS) return '/';
+      if (prev !== MaxPins && prev + val === MaxPins) return '/';
     }
 
     return val.toString();

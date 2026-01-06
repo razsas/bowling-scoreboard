@@ -5,7 +5,7 @@ import {
   inject,
   computed,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { GameService } from '../../services/game.service';
 import { CommonModule } from '@angular/common';
@@ -15,7 +15,7 @@ import { GAME_MODES, GameMode } from '../../models/game.models';
 
 @Component({
   selector: 'app-start-screen',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './start-screen.component.html',
   styleUrl: './start-screen.component.scss',

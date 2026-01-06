@@ -1,4 +1,4 @@
-import { GAME_CONSTANTS, ERROR_MESSAGES } from '../constants/game.constants';
+import { GameConstants, ErrorMessages } from '../constants/game.constants';
 import { Game, RollResult } from '../models/game.models';
 import { Observable, throwError } from 'rxjs';
 
@@ -8,18 +8,18 @@ export class BowlingGameLogic {
     pins: number
   ): Observable<RollResult> | null {
     if (!currentGame) {
-      return throwError(() => new Error(ERROR_MESSAGES.NO_ACTIVE_GAME));
+      return throwError(() => new Error(ErrorMessages.NoActiveGame));
     }
     if (currentGame.isGameOver) {
-      return throwError(() => new Error(ERROR_MESSAGES.GAME_COMPLETE));
+      return throwError(() => new Error(ErrorMessages.GameComplete));
     }
-    if (pins < GAME_CONSTANTS.MIN_PINS || pins > GAME_CONSTANTS.MAX_PINS) {
+    if (pins < GameConstants.MinPins || pins > GameConstants.MaxPins) {
       return throwError(
         () =>
           new Error(
-            ERROR_MESSAGES.INVALID_PIN_COUNT(
-              GAME_CONSTANTS.MIN_PINS,
-              GAME_CONSTANTS.MAX_PINS
+            ErrorMessages.InvalidPinCount(
+              GameConstants.MinPins,
+              GameConstants.MaxPins
             )
           )
       );
@@ -35,19 +35,19 @@ export class BowlingGameLogic {
 
     if (
       !isLastFrame &&
-      roll1 !== GAME_CONSTANTS.MAX_PINS &&
-      currentRolls.length === GAME_CONSTANTS.ROLLS_PER_REGULAR_FRAME
+      roll1 !== GameConstants.MaxPins &&
+      currentRolls.length === GameConstants.RollsPerRegularFrame
     ) {
       const sum = (roll1 || 0) + (roll2 || 0);
-      if (sum > GAME_CONSTANTS.MAX_PINS) {
+      if (sum > GameConstants.MaxPins) {
         return throwError(
           () =>
             new Error(
-              ERROR_MESSAGES.INVALID_FRAME_SUM(
+              ErrorMessages.InvalidFrameSum(
                 roll1,
                 roll2,
                 sum,
-                GAME_CONSTANTS.MAX_PINS
+                GameConstants.MaxPins
               )
             )
         );
@@ -60,19 +60,19 @@ export class BowlingGameLogic {
     if (rolls.length === 0) {
       return false;
     }
-    const isStrike = rolls[0] === GAME_CONSTANTS.MAX_PINS;
+    const isStrike = rolls[0] === GameConstants.MaxPins;
 
     if (!isLastFrame) {
-      return isStrike || rolls.length >= GAME_CONSTANTS.ROLLS_PER_REGULAR_FRAME;
+      return isStrike || rolls.length >= GameConstants.RollsPerRegularFrame;
     } else {
-      if (rolls.length < GAME_CONSTANTS.ROLLS_PER_REGULAR_FRAME) {
+      if (rolls.length < GameConstants.RollsPerRegularFrame) {
         return false;
       }
-      const isSpare = rolls[0] + rolls[1] === GAME_CONSTANTS.MAX_PINS;
+      const isSpare = rolls[0] + rolls[1] === GameConstants.MaxPins;
 
       return isStrike || isSpare
-        ? rolls.length >= GAME_CONSTANTS.MAX_ROLLS_LAST_FRAME
-        : rolls.length >= GAME_CONSTANTS.ROLLS_PER_REGULAR_FRAME;
+        ? rolls.length >= GameConstants.MaxRollsLastFrame
+        : rolls.length >= GameConstants.RollsPerRegularFrame;
     }
   }
 }

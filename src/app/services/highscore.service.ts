@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { HighscoreEntry } from '../models/game.models';
 import { catchError, of, Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environments';
-import { ERROR_MESSAGES } from '../constants/game.constants';
+import { EndPoints, ERROR_MESSAGES } from '../constants/game.constants';
 
 @Injectable()
 export class HighscoreService {
@@ -11,7 +11,7 @@ export class HighscoreService {
 
   private readonly _highscores = signal<HighscoreEntry[]>([]);
   readonly scores = computed(() => this._highscores());
-  
+
   private readonly _currentError = signal<string | null>(null);
   readonly currentError = computed(() => this._currentError());
 
@@ -32,6 +32,8 @@ export class HighscoreService {
   }
 
   getScores(): Observable<HighscoreEntry[]> {
-    return this.http.get<HighscoreEntry[]>(`${environment.apiUrl}/highscores`);
+    return this.http.get<HighscoreEntry[]>(
+      `${environment.apiUrl}${EndPoints.Highscores}`
+    );
   }
 }

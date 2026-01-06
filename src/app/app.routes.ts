@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './guards/auth.guard';
 import { playerGuard } from './guards/player.guard';
 
 export const routes: Routes = [
@@ -13,7 +14,7 @@ export const routes: Routes = [
     path: 'scoreboard',
     loadComponent: () =>
       import('./components/game/game.component').then((m) => m.GameComponent),
-    canActivate: [playerGuard],
+    canActivate: [playerGuard, authGuard],
   },
   {
     path: 'highscores',
